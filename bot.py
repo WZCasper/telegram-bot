@@ -13,12 +13,16 @@ import git
 with open('config.json', 'r', encoding='utf-8') as f:
     config = json.load(f)
 
-# Загружаем состояние (или создаём пустое)
+# Загружаем состояние (или создаём пустое с нужными ключами)
 try:
     with open('state.json', 'r') as f:
         state = json.load(f)
 except:
-    state = {"last_msg_id": {}, "joined_chats": []}
+    state = {}
+
+# Гарантируем наличие всех необходимых ключей
+state.setdefault('last_msg_id', {})
+state.setdefault('joined_chats', [])
 
 # Загружаем отложенные сообщения
 try:
