@@ -1,0 +1,16 @@
+{
+  "api_id": 3559eccbacc1f494fb6053671a21b7c3,
+  "api_hash": "ваш_api_hash",
+  "search_tags": ["python", "telegram"],
+  "response_delay": 10,
+  "triggers": {
+    "привет": [
+      {"type": "text", "text": "Приветствую!"},
+      {"type": "photo", "file": "https://example.com/hello.jpg"}
+    ],
+    "как дела": [
+      {"type": "text", "text": "Отлично!"},
+      {"type": "text", "text": "Всё хорошо, а у тебя?"}
+    ]
+  }
+}
