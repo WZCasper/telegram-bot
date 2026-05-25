@@ -2,14 +2,24 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Управление Telegram ботом</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
     <h1>🤖 Telegram Bot Manager</h1>
-    <button id="loginBtn">Войти через GitHub</button>
-    <div id="editor" style="display:none;">
+
+    <!-- Блок входа по токену -->
+    <div id="loginSection">
+      <h2>Введите ваш GitHub токен</h2>
+      <input type="password" id="tokenInput" placeholder="ghp_..." style="width:300px;">
+      <button id="saveTokenBtn">Войти</button>
+      <p><small>Токен должен иметь права <b>repo</b>. Вы уже создали его как GH_PAT.</small></p>
+    </div>
+
+    <!-- Блок редактора (показывается после входа) -->
+    <div id="editorSection" style="display:none;">
       <h2>🔍 Поиск групп (теги через запятую)</h2>
       <input type="text" id="tagsInput" placeholder="python, telegram, чат">
 
@@ -29,6 +39,7 @@
       <div id="status"></div>
     </div>
   </div>
+
   <script src="app.js"></script>
 </body>
 </html>
