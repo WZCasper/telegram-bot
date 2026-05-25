@@ -1,45 +1,248 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Управление Telegram ботом</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberBot — Панель управления Telegram-ботом</title>
+    <!-- Иконки Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Наш кастомный CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app">
-    <h1>🤖 Telegram Bot Manager</h1>
 
-    <!-- Блок входа по токену -->
-    <div id="loginSection">
-      <h2>Введите ваш GitHub токен</h2>
-      <input type="password" id="tokenInput" placeholder="ghp_..." style="width:300px;">
-      <button id="saveTokenBtn">Войти</button>
-      <p><small>Токен должен иметь права <b>repo</b>. Вы уже создали его как GH_PAT.</small></p>
+    <div class="app-container">
+
+        <!-- ================= ЭКРАН ВХОДА (AUTH) ================= -->
+        <div id="authScreen" class="card auth-screen">
+            <div class="logo-area">
+                <i data-lucide="shield-alert"></i>
+            </div>
+            <div>
+                <h1 class="screen-title">Cyber<span>Bot</span></h1>
+                <p class="screen-subtitle">Введите персональный GitHub токен доступа для авторизации</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="githubToken">
+                    <i data-lucide="key-round" style="width: 14px; height: 14px;"></i> GitHub Токен
+                </label>
+                <div class="input-wrapper">
+                    <input type="password" id="githubToken" class="form-input" placeholder="ghp_********************************">
+                    <i data-lucide="lock"></i>
+                </div>
+            </div>
+
+            <button id="loginBtn" class="btn-3d" style="width: 100%;">
+                <span>Войти в систему</span> <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+            </button>
+            <div id="authError" style="color: var(--error); margin-top: 10px; display: none;"></div>
+        </div>
+
+
+        <!-- ================= ГЛАВНЫЙ ЭКРАН ПАНЕЛИ УПРАВЛЕНИЯ ================= -->
+        <div id="mainScreen" class="card main-screen" style="display: none;">
+            
+            <!-- Хедер панели -->
+            <div class="dashboard-header">
+                <div class="user-info">
+                    <div class="user-avatar" id="avatarLetter">U</div>
+                    <div class="user-meta">
+                        <div class="user-name" id="userName">Администратор</div>
+                        <div class="bot-status">Бот Активен</div>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn-3d btn-secondary" style="padding: 10px 18px; font-size: 12px;">
+                    <i data-lucide="log-out" style="width: 14px; height: 14px;"></i> Выйти
+                </button>
+            </div>
+
+            <!-- Навигация по табам -->
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="tab-general">
+                    <i data-lucide="sliders" style="width: 16px; height: 16px;"></i> Основное
+                </button>
+                <button class="tab-btn" data-tab="tab-antiflood">
+                    <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i> Антифлуд и лимиты
+                </button>
+                <button class="tab-btn" data-tab="tab-schedule">
+                    <i data-lucide="calendar" style="width: 16px; height: 16px;"></i> Расписание
+                </button>
+                <button class="tab-btn" data-tab="tab-multiacc">
+                    <i data-lucide="users" style="width: 16px; height: 16px;"></i> Мультиаккаунты
+                </button>
+            </div>
+
+
+            <!-- ================= ТАБ: ОСНОВНЫЕ НАСТРОЙКИ ================= -->
+            <div id="tab-general" class="tab-content active">
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="groupTags">
+                            <i data-lucide="hash" style="width: 14px; height: 14px;"></i> Теги поиска групп
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" id="groupTags" class="form-input" placeholder="#crypto, #it_jobs, #chats">
+                            <i data-lucide="search"></i>
+                        </div>
+                        <span class="toggle-sub">Укажите ключевые слова/хэштеги через запятую</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="replyDelay">
+                            <i data-lucide="clock" style="width: 14px; height: 14px;"></i> Задержка ответа (секунды)
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="replyDelay" class="form-input" min="0" placeholder="5">
+                            <i data-lucide="hourglass"></i>
+                        </div>
+                        <span class="toggle-sub">Пауза перед отправкой триггера в чат</span>
+                    </div>
+                </div>
+
+                <!-- Динамические триггеры -->
+                <div class="triggers-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i data-lucide="message-square-code" style="color: var(--accent-gold);"></i> Триггеры
+                        </h3>
+                        <button id="addTriggerBtn" class="btn-3d" style="padding: 10px 18px; font-size: 12px;">
+                            <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Добавить
+                        </button>
+                    </div>
+                    <div id="triggersContainer"></div>
+                </div>
+            </div>
+
+
+            <!-- ================= ТАБ: АНТИФЛУД И ЛИМИТЫ (заготовка) ================= -->
+            <div id="tab-antiflood" class="tab-content">
+                <div class="settings-grid">
+                    <div>
+                        <div class="toggle-group">
+                            <div class="toggle-label-wrap">
+                                <span class="form-label">Умный Антифлуд</span>
+                                <span class="toggle-sub">Защита от частой отправки одинаковых ответов</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="antifloodToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="maxDailyReplies">
+                                <i data-lucide="gauge" style="width: 14px; height: 14px;"></i> Максимум ответов в день
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="maxDailyReplies" class="form-input" value="150">
+                                <i data-lucide="activity"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i data-lucide="filter" style="width: 14px; height: 14px;"></i> Фильтр типов чатов
+                            </label>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" id="chatSupergroups" checked> Супергруппы</label>
+                                <label class="checkbox-item"><input type="checkbox" id="chatPrivate" checked> Личные чаты</label>
+                                <label class="checkbox-item"><input type="checkbox" id="chatChannels"> Каналы</label>
+                                <label class="checkbox-item"><input type="checkbox" id="chatNormal" checked> Обычные группы</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="maxGroupLimit">
+                                <i data-lucide="layers" style="width: 14px; height: 14px;"></i> Лимит групп на сессию
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="maxGroupLimit" class="form-input" value="50">
+                                <i data-lucide="hash"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ================= ТАБ: РАСПИСАНИЕ (заготовка) ================= -->
+            <div id="tab-schedule" class="tab-content">
+                <div class="settings-grid">
+                    <div>
+                        <div class="toggle-group">
+                            <div class="toggle-label-wrap">
+                                <span class="form-label">Работа по графику</span>
+                                <span class="toggle-sub">Бот будет отвечать только в указанные часы</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="scheduleToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Период активности (UTC)</label>
+                            <div class="time-range">
+                                <span>С</span>
+                                <input type="text" class="time-input" id="scheduleFrom" value="09:00" style="width: 80px;">
+                                <span>До</span>
+                                <input type="text" class="time-input" id="scheduleTo" value="18:00" style="width: 80px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label">Активные дни недели</label>
+                            <div class="checkbox-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                                <label class="checkbox-item"><input type="checkbox" id="dayMon" checked> Пн</label>
+                                <label class="checkbox-item"><input type="checkbox" id="dayTue" checked> Вт</label>
+                                <label class="checkbox-item"><input type="checkbox" id="dayWed" checked> Ср</label>
+                                <label class="checkbox-item"><input type="checkbox" id="dayThu" checked> Чт</label>
+                                <label class="checkbox-item"><input type="checkbox" id="dayFri" checked> Пт</label>
+                                <label class="checkbox-item"><input type="checkbox" id="daySat"> Сб</label>
+                                <label class="checkbox-item"><input type="checkbox" id="daySun"> Вс</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ================= ТАБ: МУЛЬТИАККАУНТЫ (заготовка) ================= -->
+            <div id="tab-multiacc" class="tab-content">
+                <div class="section-header" style="margin-bottom: 15px;">
+                    <h3 class="section-title">Подключенные аккаунты</h3>
+                    <button class="btn-3d" style="padding: 10px 18px; font-size: 12px;" id="addAccountBtn">
+                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Добавить
+                    </button>
+                </div>
+
+                <div class="accounts-list" id="accountsList">
+                    <!-- Динамически заполняется из config.json -->
+                </div>
+            </div>
+
+
+            <!-- Нижний тулбар -->
+            <div class="footer-actions">
+                <button id="saveBtn" class="btn-3d">
+                    <i data-lucide="save" style="width: 18px; height: 18px;"></i> Сохранить настройки
+                </button>
+                <div id="saveStatus" style="margin-left: 15px; display: flex; align-items: center; gap: 8px;"></div>
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- Блок редактора (показывается после входа) -->
-    <div id="editorSection" style="display:none;">
-      <h2>🔍 Поиск групп (теги через запятую)</h2>
-      <input type="text" id="tagsInput" placeholder="python, telegram, чат">
+    <!-- Контейнер для тостов -->
+    <div id="toastContainer" class="toast-container"></div>
 
-      <h2>⏳ Задержка ответа (секунд)</h2>
-      <input type="number" id="delayInput" min="0" value="10">
-
-      <h2>⚡ Триггеры и ответы</h2>
-      <div id="triggersContainer"></div>
-      <button id="addTriggerBtn">➕ Добавить триггер</button>
-
-      <h2>🖼️ Загрузить изображение</h2>
-      <input type="file" id="imageUpload" accept="image/*">
-      <div id="uploadedImages"></div>
-
-      <hr>
-      <button id="saveBtn">💾 Сохранить изменения</button>
-      <div id="status"></div>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
+    <!-- Наш JavaScript -->
+    <script src="app.js"></script>
 </body>
 </html>
