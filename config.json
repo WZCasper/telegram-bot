@@ -27,12 +27,12 @@
     "cod mw1",
     "modern warfare 2"
   ],
-  "response_delay": 10,
+  "response_delay": 5,
   "triggers": {
     "Привет бот": [
       {
         "type": "text",
-        "text": "Привет. Я работаю отлично 👍"
+        "text": "Я работаю корректно"
       }
     ]
   }
