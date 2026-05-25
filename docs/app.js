@@ -1,5 +1,5 @@
 // ====== НАСТРОЙКИ (замени своими данными) ======
-const CLIENT_ID = 'тут_будет_твой_github_oauth_client_id';  // получим на следующем шаге
+const CLIENT_ID = 'Ov23li8ChxOExYP4ddkJ';  // получим на следующем шаге
 const REPO_OWNER = 'WZCasper';                // твой логин на GitHub
 const REPO_NAME = 'telegram-bot';                         // имя репозитория
 const BRANCH = 'main';
