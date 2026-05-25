@@ -1,44 +1,55 @@
-// ====== НАСТРОЙКИ (замени своими данными) ======
-const CLIENT_ID = 'Ov23li8ChxOExYP4ddkJ';  // получим на следующем шаге
-const REPO_OWNER = 'WZCasper';                // твой логин на GitHub
-const REPO_NAME = 'telegram-bot';                         // имя репозитория
+// ====== ВАШИ ДАННЫЕ ======
+const REPO_OWNER = 'wzcasper';             // ваш логин на GitHub
+const REPO_NAME = 'telegram-bot';          // имя репозитория
 const BRANCH = 'main';
 
+// Сохраняем токен в sessionStorage при ручном вводе
 let accessToken = sessionStorage.getItem('gh_token');
 let configSha = null;
 let config = null;
 
-// Проверка авторизации при загрузке
-async function init() {
-  if (!accessToken) {
-    document.getElementById('loginBtn').style.display = 'block';
-    return;
+// DOM элементы
+const loginSection = document.getElementById('loginSection');
+const editorSection = document.getElementById('editorSection');
+const tokenInput = document.getElementById('tokenInput');
+const saveTokenBtn = document.getElementById('saveTokenBtn');
+const loginBtn = document.getElementById('loginBtn');  // больше не нужен, но оставим для совместимости
+const saveBtn = document.getElementById('saveBtn');
+const statusDiv = document.getElementById('status');
+
+// Проверка при загрузке
+function init() {
+  if (accessToken) {
+    showEditor();
+    loadConfig().then(renderUI);
+  } else {
+    showLogin();
   }
-  document.getElementById('loginBtn').style.display = 'none';
-  document.getElementById('editor').style.display = 'block';
-  await loadConfig();
-  renderUI();
 }
 
-// OAuth вход
-document.getElementById('loginBtn').addEventListener('click', () => {
-  const redirectUri = window.location.origin + window.location.pathname;
-  window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${redirectUri}&scope=repo`;
-});
+function showLogin() {
+  loginSection.style.display = 'block';
+  editorSection.style.display = 'none';
+}
 
-// Получение токена после редиректа
-if (window.location.hash) {
-  const params = new URLSearchParams(window.location.hash.substring(1));
-  const token = params.get('access_token');
+function showEditor() {
+  loginSection.style.display = 'none';
+  editorSection.style.display = 'block';
+}
+
+// Ручной вход по токену
+saveTokenBtn.addEventListener('click', () => {
+  const token = tokenInput.value.trim();
   if (token) {
     sessionStorage.setItem('gh_token', token);
-    window.location.hash = '';
     accessToken = token;
-    init();
+    tokenInput.value = '';
+    showEditor();
+    loadConfig().then(renderUI);
   }
-}
+});
 
-// Загрузка конфига с GitHub
+// Загрузка конфига с GitHub API
 async function loadConfig() {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/config.json?ref=${BRANCH}`;
   const resp = await fetch(url, {
@@ -49,7 +60,7 @@ async function loadConfig() {
   config = JSON.parse(atob(data.content)); // декодируем base64
 }
 
-// Отрисовка интерфейса на основе конфига
+// Рендеринг UI
 function renderUI() {
   document.getElementById('tagsInput').value = config.search_tags.join(', ');
   document.getElementById('delayInput').value = config.response_delay;
@@ -67,11 +78,11 @@ function renderTriggers() {
       <div class="responses-list">
         ${responses.map((r, i) => `
           <div class="response-item">
-            <select class="resp-type">
+            <select class="resp-type" onchange="switchInputType(this)">
               <option value="text" ${r.type==='text'?'selected':''}>Текст</option>
               <option value="photo" ${r.type==='photo'?'selected':''}>Картинка</option>
             </select>
-            ${r.type==='text' 
+            ${r.type==='text'
               ? `<input type="text" class="resp-text" value="${escapeHtml(r.text||'')}">`
               : `<input type="text" class="resp-file" value="${escapeHtml(r.file||'')}" placeholder="URL или путь к файлу">`
             }
@@ -90,6 +101,18 @@ function escapeHtml(text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function switchInputType(selectEl) {
+  const inputEl = selectEl.nextElementSibling;
+  if (selectEl.value === 'text') {
+    inputEl.className = 'resp-text';
+    inputEl.placeholder = '';
+  } else {
+    inputEl.className = 'resp-file';
+    inputEl.placeholder = 'URL или путь к файлу';
+  }
+}
+
+// Добавление триггера
 document.getElementById('addTriggerBtn').addEventListener('click', () => {
   const container = document.getElementById('triggersContainer');
   const div = document.createElement('div');
@@ -98,7 +121,7 @@ document.getElementById('addTriggerBtn').addEventListener('click', () => {
     <strong>Триггер:</strong> <input type="text" class="trigger-key" value="">
     <div class="responses-list">
       <div class="response-item">
-        <select class="resp-type">
+        <select class="resp-type" onchange="switchInputType(this)">
           <option value="text">Текст</option>
           <option value="photo">Картинка</option>
         </select>
@@ -117,7 +140,7 @@ function addResponse(button) {
   const item = document.createElement('div');
   item.className = 'response-item';
   item.innerHTML = `
-    <select class="resp-type">
+    <select class="resp-type" onchange="switchInputType(this)">
       <option value="text">Текст</option>
       <option value="photo">Картинка</option>
     </select>
@@ -125,22 +148,10 @@ function addResponse(button) {
     <button onclick="this.parentElement.remove()">❌</button>
   `;
   responsesDiv.appendChild(item);
-  // Обработчик смены типа
-  item.querySelector('.resp-type').addEventListener('change', function() {
-    const input = this.nextElementSibling;
-    if (this.value === 'text') {
-      input.className = 'resp-text';
-      input.placeholder = '';
-    } else {
-      input.className = 'resp-file';
-      input.placeholder = 'URL или путь к файлу';
-    }
-  });
 }
 
 // Сохранение конфига
-document.getElementById('saveBtn').addEventListener('click', async () => {
-  // Собираем данные из формы
+saveBtn.addEventListener('click', async () => {
   config.search_tags = document.getElementById('tagsInput').value.split(',').map(s => s.trim()).filter(s => s);
   config.response_delay = parseInt(document.getElementById('delayInput').value) || 0;
 
@@ -163,7 +174,6 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   });
   config.triggers = triggers;
 
-  // Коммитим изменения через GitHub API
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
   const body = {
     message: 'Обновление конфигурации через веб-интерфейс',
@@ -172,27 +182,25 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     sha: configSha
   };
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/config.json`;
-  const resp = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      Authorization: `token ${accessToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
-  if (resp.ok) {
-    document.getElementById('status').innerText = '✅ Конфигурация сохранена!';
-    await loadConfig(); // обновить SHA
-  } else {
-    const err = await resp.json();
-    document.getElementById('status').innerText = '❌ Ошибка сохранения: ' + err.message;
+  try {
+    const resp = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (resp.ok) {
+      statusDiv.innerText = '✅ Конфигурация сохранена!';
+      await loadConfig(); // обновить SHA
+    } else {
+      const err = await resp.json();
+      statusDiv.innerText = '❌ Ошибка сохранения: ' + err.message;
+    }
+  } catch (e) {
+    statusDiv.innerText = '❌ Сетевая ошибка: ' + e.message;
   }
-});
-
-// Загрузка изображений (будет реализована позже)
-document.getElementById('imageUpload').addEventListener('change', async (e) => {
-  // Пока просто покажем, что нужно доработать
-  alert('Функция загрузки изображений будет готова после настройки GitHub OAuth и прав доступа. Пока используй прямые ссылки на изображения.');
 });
 
 init();
