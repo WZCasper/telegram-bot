@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Управление Telegram ботом</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <h1>🤖 Telegram Bot Manager</h1>
+    <button id="loginBtn">Войти через GitHub</button>
+    <div id="editor" style="display:none;">
+      <h2>🔍 Поиск групп (теги через запятую)</h2>
+      <input type="text" id="tagsInput" placeholder="python, telegram, чат">
+
+      <h2>⏳ Задержка ответа (секунд)</h2>
+      <input type="number" id="delayInput" min="0" value="10">
+
+      <h2>⚡ Триггеры и ответы</h2>
+      <div id="triggersContainer"></div>
+      <button id="addTriggerBtn">➕ Добавить триггер</button>
+
+      <h2>🖼️ Загрузить изображение</h2>
+      <input type="file" id="imageUpload" accept="image/*">
+      <div id="uploadedImages"></div>
+
+      <hr>
+      <button id="saveBtn">💾 Сохранить изменения</button>
+      <div id="status"></div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
