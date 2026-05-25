@@ -5,6 +5,7 @@ import random
 import asyncio
 from datetime import datetime, timedelta
 from telethon import TelegramClient, functions, types
+from telethon.sessions import StringSession
 from telethon.errors import FloodWaitError
 import git
 
@@ -34,8 +35,9 @@ sessions_json = os.environ.get('SESSION_STRINGS', '{}')
 sessions = json.loads(sessions_json)
 
 async def process_account(account_name, session_str):
-    client = TelegramClient(f'session_{account_name}', config['api_id'], config['api_hash'])
-    await client.start(session_string=session_str)
+    # Создаём клиент с строковой сессией
+    client = TelegramClient(StringSession(session_str), config['api_id'], config['api_hash'])
+    await client.start()
     print(f"Аккаунт {account_name} запущен")
 
     # === 1. Поиск и вступление в группы ===
