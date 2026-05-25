@@ -2,25 +2,47 @@
   "api_id": 35781070,
   "api_hash": "3559eccbacc1f494fb6053671a21b7c3",
   "search_tags": [
-    "python",
-    "telegram"
+    "call of duty",
+    "cod",
+    "mw2",
+    "cod mw2",
+    "modern warfare 2",
+    "mw3",
+    "modern warfare",
+    "modern warfare 3",
+    "call of duty modern warfare 3",
+    "warzone",
+    "call of duty modern warfare",
+    "call of duty modern warfare 2",
+    "cod ww2",
+    "cod ghosts",
+    "call of duty black ops 7",
+    "call of duty gameplay",
+    "cod waw",
+    "fps",
+    "call of duty ww2",
+    "call of duty warzone",
+    "call of duty black ops 6",
+    "black ops 6",
+    "cod mw1",
+    "modern warfare 2"
   ],
   "response_delay": 10,
   "triggers": {
-    "Привет": [
+    "ÐÑÐ¸Ð²ÐµÑ": [
       {
         "type": "text",
-        "text": "Приветик"
+        "text": "ÐÑÐ¸Ð²ÐµÑÐ¸Ðº"
       }
     ],
-    "ÐºÐ°Ðº Ð´ÐµÐ»Ð°": [
+    "ÃÂºÃÂ°ÃÂº ÃÂ´ÃÂµÃÂ»ÃÂ°": [
       {
         "type": "text",
-        "text": "ÐÑÐ»Ð¸ÑÐ½Ð¾!"
+        "text": "ÃÂÃÂÃÂ»ÃÂ¸ÃÂÃÂ½ÃÂ¾!"
       },
       {
         "type": "text",
-        "text": "ÐÑÑ ÑÐ¾ÑÐ¾ÑÐ¾, Ð° Ñ ÑÐµÐ±Ñ?"
+        "text": "ÃÂÃÂÃÂ ÃÂÃÂ¾ÃÂÃÂ¾ÃÂÃÂ¾, ÃÂ° ÃÂ ÃÂÃÂµÃÂ±ÃÂ?"
       }
     ]
   }
